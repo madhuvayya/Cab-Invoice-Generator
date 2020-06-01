@@ -1,14 +1,27 @@
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-public class InvoiceGeneratorTest {
-    InvoiceService invoiceService = null;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoRule;
 
-    @Before
-    public void setUp(){
-        invoiceService = new InvoiceService();
-    }
+@RunWith(MockitoJUnitRunner.class)
+public class InvoiceGeneratorTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @Mock
+    public RideRepository rideRepository;
+
+    @InjectMocks
+    public InvoiceService invoiceService;
 
     @Test
     public void givenDistanceAndTime_shouldReturnFare() {
@@ -38,26 +51,26 @@ public class InvoiceGeneratorTest {
     }
 
     @Test
-    public void givenUserIDAndRides_shouldReturnInvoiceSummary() {
+    public void givenUserIDAndRides_whenFareIsNormal_shouldReturnInvoiceSummaryForNormalFares() {
         String userId = "a@d.com";
         Ride[] rides = {
                 new Ride(2.0, 5),
                 new Ride(0.1, 1)
         };
-        invoiceService.addRides(userId,rides);
+        Mockito.when(rideRepository.getRides(ArgumentMatchers.any())).thenReturn(rides);
         InvoiceSummary summary = invoiceService.getInvoiceSummary(userId, InvoiceService.FarePremium.NORMAL);
         InvoiceSummary expectedInvoiceSummary = new InvoiceSummary(2, 30);
         Assert.assertEquals(expectedInvoiceSummary,summary);
     }
 
     @Test
-    public void givenUserIDAndRides_whenFarePremiumProvided_shouldReturnInvoiceSummary() {
+    public void givenUserIDAndRides_whenFareIsPremium_shouldReturnInvoiceSummaryForPremiumFares() {
         String userId = "a@d.com";
         Ride[] rides = {
                 new Ride(2.0, 5),
                 new Ride(0.1, 1)
         };
-        invoiceService.addRides(userId,rides);
+        Mockito.when(rideRepository.getRides(ArgumentMatchers.any())).thenReturn(rides);
         InvoiceSummary summary = invoiceService.getInvoiceSummary(userId, InvoiceService.FarePremium.PREMIUM);
         InvoiceSummary expectedInvoiceSummary = new InvoiceSummary(2, 60);
         Assert.assertEquals(expectedInvoiceSummary,summary);

@@ -9,9 +9,9 @@ public class InvoiceService {
 
     public double calculateFare(double distance, int time, FarePremium farePremium) {
         FaresFactory faresFactory = new FaresFactory();
-        Fares fares1 = faresFactory.getFares(farePremium);
-        double fare  = (fares1.RATE_PER_KILOMETER * distance) + (fares1.RATE_PER_MINUTE * time);
-        return Math.max(fare, fares1.MINIMUM_FARE);
+        Fares fares = faresFactory.getFares(farePremium);
+        double fare  = (fares.RATE_PER_KILOMETER * distance) + (fares.RATE_PER_MINUTE * time);
+        return Math.max(fare, fares.MINIMUM_FARE);
     }
 
     public InvoiceSummary calculateFare(Ride[] rides,FarePremium farePremium) {
